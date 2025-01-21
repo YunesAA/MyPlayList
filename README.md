@@ -77,3 +77,4 @@ This application allows users to search for songs, add them to their favorites, 
 ## License
 MIT license.
 
+---
