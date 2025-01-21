@@ -25,7 +25,7 @@ This application allows users to search for songs, add them to their favorites, 
    
    or
    
-   just hold left-ctrl and left-click the text in cmd (it should print out the url on its own)
+   just hold `left-ctrl` and `left-click` the text in cmd (it should print out the url on its own)
 
 
 3. Log in using an existing user account or create a new one.
