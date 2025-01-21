@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Favorites</title>
+    <style>
+        #songs-container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .song {
+            width: 25%;
+            text-align: center;
+        }
+        img {
+            height: auto;
+            margin-bottom: 10px;
+            margin-left: auto; 
+            margin-right: auto;
+        }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{title}}</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!-- Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div id="header" class="bg-light p-3 d-flex">
+    <a href="/users" style="flex-grow: 1; text-align: left;">Users</a>
+    <a href="/favorites" style="flex-grow: 1; text-align:left;">Favorites</a>
+    <a href="/index" style="flex-grow: 1; text-align:right;">Search</a>
+    <a href="/auth" style="flex-grow: 1; text-align: right;">Logout</a>
+</div>
+<h1>Favorite Songs</h1>
+<div id="songs-container" >
+    {{#each songs}}
+        <div class="song">
+        
+            <img src="{{this.album_cover}}" alt="Song ID: {{this.fav_id}}">
+            <h2>{{this.song}}</h2>
+            <p>by {{this.artist_name}}</p>
+   <br></br>
+        </div>
+    {{/each}}
+</div>
+</body>
+</html>
