@@ -72,3 +72,8 @@ This application allows users to search for songs, add them to their favorites, 
 - The iTunes API is utilized for song searches and details.
 - Sessions are used to manage user authentication and roles.
 
+---
+
+## License
+MIT license.
+
