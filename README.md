@@ -1,5 +1,5 @@
 # User-Playlist-Manager
-Technologies: JavaScript, HTML, Node.js, SQLite, iTunes API
+Technologies: JavaScript, HBS, Node.js, SQLite, iTunes API
 
 ## Overview
 This application allows users to search for songs, add them to their favorites, and manage user accounts with different roles (guest or admin). Admin users have additional privileges, such as accessing the user management tab.
