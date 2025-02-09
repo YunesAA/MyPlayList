@@ -1,9 +1,9 @@
-
 var url = require('url')
 var sqlite3 = require('sqlite3').verbose() //verbose provides more detailed stack trace
 var db = new sqlite3.Database('data/users.db')
 const http = require('http')
 const path = require('path')
+const fetch = require('node-fetch')
 
 //authenticate
 exports.authenticate = function (request, response, next) {
@@ -109,7 +109,7 @@ exports.users = function(request, response){
     }
 };
 
-exports.find = function(request, response) {
+exports.find = async function(request, response) {
     console.log("===RUNNING FIND SONGS===");
 
     let songTitle = request.query.title;
@@ -123,32 +123,19 @@ exports.find = function(request, response) {
     let titleWithPlusSigns = songTitle.trim().replace(/\s/g, '+');
     console.log('titleWithPlusSigns:', titleWithPlusSigns);
 
-    const options = {
-        "method": "GET",
-        "hostname": "itunes.apple.com",
-        "port": null,
-        "path": `/search?term=${titleWithPlusSigns}&entity=musicTrack&limit=5`,//dispays 5 songs
-        "headers": {
-        "useQueryString": true
-        }
+    try {
+        const res = await fetch(`https://itunes.apple.com/search?term=${titleWithPlusSigns}&entity=musicTrack&limit=5`)
+        const json = await res.json()
+        response.json(json)
     }
-
-  //create the actual http request and set up its handlers
-  http.request(options, function(apiResponse) {
-    let songData = ''
-    apiResponse.on('data', function(chunk) {
-      //console.log("chunk: "+ chunk)
-      songData += chunk
-    })
-    apiResponse.on('end', function() {
-      response.contentType('application/json').json(JSON.parse(songData))
-    })
-  }).end() //important to end the request
-            //to actually send the message
+    catch (err) {
+        console.error(err)
+        response.status(500).send('Server error 500')
+    }
 }
 
 
-exports.song= function(request,response){
+exports.song= async function(request,response){
 console.log("===RUNNING SONGS DETAILS===");
 
     //variables
@@ -156,46 +143,25 @@ console.log("===RUNNING SONGS DETAILS===");
     let urlObj = parseURL(request, response)
     let songID = urlObj.path
     songID = songID.substring(songID.lastIndexOf("/") + 1, songID.length)//235
-    let songName= '' 
-    let artistName= ''
 
-    const options = {
-        "method": "GET",
-        "hostname": "itunes.apple.com",
-        "port": null,
-        "path": `/search?term=${songID}&entity=musicTrack&limit=1`, ///&entity=musicTrack&limit=3
-        "headers": {
-        "useQueryString": true
-        }
-    }
+    try {
+        const res = await fetch(`https://itunes.apple.com/lookup?id=${songID}`)
+        const json = await res.json()
 
-    //create the actual http request and set up its handlers
-    http.request(options, function(apiResponse) {
-        
-    let songData = ''
+        const song = json.results[0];
+        console.log("  =====SONG=====")
+        let songName = song.trackName;
+        let artistName = song.artistName;
+        let albumCover = song.artworkUrl100;
 
-    apiResponse.on('data', function(chunk) {
-        //console.log("chunk: "+ chunk)
-        songData += chunk;
-    });
+        //Display song details
+        console.log("GET SONG NAME: " + songName);
+        console.log("GET SONG ARTIST: " + artistName);
+        console.log("GET SONG ID: " + songID);
+        console.log("GET ALBUM COVER URL: " + albumCover);
 
-    apiResponse.on('end', function() {
-        if (JSON.parse(songData).resultCount > 0) {
-            let song = JSON.parse(songData).results[0];
-            console.log("  =====SONG=====")
-            let songName = song.trackName;
-            let artistName = song.artistName;
-            let albumCover = song.artworkUrl100;
-
-            //Display song details
-            console.log("GET SONG NAME: " + songName);
-            console.log("GET SONG ARTIST: " + artistName);
-            console.log("GET SONG ID: " + songID);
-            console.log("GET ALBUM COVER URL: " + albumCover);
-
-
-            // Check if the song is already in favorites
-            db.get("SELECT * FROM fav WHERE song = ? AND fav_id = ? AND artist_name = ?", [songName, songID, artistName], (err, row) => {
+        // Check if the song is already in favorites
+        db.get("SELECT * FROM fav WHERE song = ? AND fav_id = ? AND artist_name = ?", [songName, songID, artistName], (err, row) => {
                 if (row) {
                     return response.send("This song is already in your favorites");
                 } else {
@@ -211,11 +177,12 @@ console.log("===RUNNING SONGS DETAILS===");
                     });
                 }
             })
-        } else {
-            response.status(404).send("Song not found")
-        }
-    })
-    }).end()
+    }
+    
+    catch (err) {
+        console.error(err)
+        response.status(404).send('Song not found')
+    }
 }
 
 
