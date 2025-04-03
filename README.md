@@ -1,4 +1,5 @@
-# User-Playlist-Manager
+# MyPlayList
+(which is a user playlist manager)
 Technologies: JavaScript, HBS, Node.js, SQLite, iTunes API
 
 ## Overview
